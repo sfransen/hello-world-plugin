@@ -17,6 +17,10 @@
     -->
     <f:textbox />
 	</f:entry>
+
+	<f:entry title="Sleep time" field="sleepTime">
+    <f:textbox />
+    </f:entry>
   <!--
     If you have multiple properties that need to be configured, add more <f:entry />s
   -->

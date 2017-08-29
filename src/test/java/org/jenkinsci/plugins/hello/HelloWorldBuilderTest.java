@@ -34,8 +34,11 @@ import org.hamcrest.core.IsInstanceOf;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+//import org.junit.After;
+//import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
+//import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -57,12 +60,24 @@ public class HelloWorldBuilderTest {
     public HelloWorldBuilderTest() {
     }
 
+//     @BeforeClass
+//     public static void setUpClass() throws Exception {
+//     }
+//
+//     @AfterClass
+//     public static void tearDownClass() throws Exception {
+//     }
+//
     @Before
     public void setUp() {
         name = "New name";
         builder = new HelloWorldBuilder(name);
     }
 
+//     @After
+//     public void tearDown() throws Exception {
+//     }
+//
     @Test
     @WithoutJenkins // This test does not need the JenkinsRule instance
     public void testGetName() {
@@ -156,5 +171,32 @@ public class HelloWorldBuilderTest {
         FreeStyleBuild completedBuild = jenkins.assertBuildStatusSuccess(project.scheduleBuild2(0));
         String helloString = "Bonjour, " + name + "!";
         jenkins.assertLogContains(helloString, completedBuild);
+    }
+
+    /**
+     * Test of getSleepTime method, of class HelloWorldBuilder.
+     */
+    @Test
+    public void testGetSleepTime() {
+        System.out.println("getSleepTime");
+        HelloWorldBuilder instance = null;
+        long expResult = 0L;
+        long result = instance.getSleepTime();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of setSleepTime method, of class HelloWorldBuilder.
+     */
+    @Test
+    public void testSetSleepTime() {
+        System.out.println("setSleepTime");
+        long sleepTime = 0L;
+        HelloWorldBuilder instance = null;
+        instance.setSleepTime(sleepTime);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

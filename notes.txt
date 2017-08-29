@@ -1,0 +1,1 @@
+git remote add upstream https://github.com/markeite/hello-world-plugin

@@ -10,6 +10,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import org.kohsuke.stapler.DataBoundSetter;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
@@ -40,7 +41,8 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     /** Name to be displayed by the 'Say hello world' build step. */
     private final String name;
-
+    /** Sleep duration in milliseconds */
+    private long sleepTime = 0;
     /**
      * This annotation tells Jenkins to call this constructor, with values from
      * the configuration form page with matching parameter names.
@@ -66,10 +68,13 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
                               final FilePath workspace,
                               final Launcher launcher,
                               final TaskListener listener)
+
         throws InterruptedException, IOException {
         // this is where you 'build' the project since this is a
         // dummy, we just say 'hello world' and call that a build
-
+// 		listener.getLogger().println("Sleeping " + (sleepTime / 1000.0) + " seconds");
+// 		Thread.sleep(sleepTime);
+// 		listener.getLogger().println("Awake after " + (sleepTime / 1000.0) + "seconds");
         // this also shows how you can consult the global
         // configuration of the builder
         if (getDescriptor().useFrench()) {
@@ -77,6 +82,9 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         } else {
             listener.getLogger().println("Hello, " + name + "!");
         }
+        listener.getLogger().println("Sleeping " + (sleepTime / 1000.0) + " seconds");
+		Thread.sleep(sleepTime);
+		listener.getLogger().println("Awake after " + (sleepTime / 1000.0) + " seconds");
     }
 
     /**
@@ -96,6 +104,21 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         // see Descriptor javadoc for more about what a descriptor is.
         return (DescriptorImpl) super.getDescriptor();
     }
+
+   /** Return sleep time in milliseconds.
+   * @return sleep time in milliseconds
+   */
+   public final long getSleepTime() {
+		return sleepTime;
+   }
+   /** Set sleep time in milliseconds.
+   * @param sleepTime duration of sleep in milliseconds
+   */
+
+	@DataBoundSetter
+	public void setSleepTime(final long sleepTime) {
+    	this.sleepTime = sleepTime;
+	}
 
     /**
      * Descriptor for {@link HelloWorldBuilder}. The class is marked as public
@@ -147,17 +170,32 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
          * @throws java.io.IOException on input / output error
          * @throws javax.servlet.ServletException on servlet exception
          */
-        public FormValidation doCheckName(@QueryParameter final String value)
-                throws IOException, ServletException {
-            if (value.length() == 0) {
-                return FormValidation.error("Please set a name");
-            }
-            if (value.length() < NAME_LENGTH_WARNING) {
-                return FormValidation.warning("Isn't the name too short?");
-            }
-            return FormValidation.ok();
-        }
-
+		public FormValidation doCheckSleepTime(@QueryParameter String value)
+				throws IOException, ServletException {
+			if (value == null || value.isEmpty()) {
+				return FormValidation.ok(); // Null accepted
+			}
+			value = value.trim();           // Remove leading and trailing spaces
+			if (value.isEmpty()) {
+				return FormValidation.ok(); // Empty string accepted
+			}
+			long sleepTime;
+			try {
+				sleepTime = Long.parseLong(value);
+			} catch (NumberFormatException nfe) {
+				return FormValidation.error("Sleep time must be a positive integer");
+			}
+			if (sleepTime < 0) {
+				return FormValidation.error("Sleep time must be a positive integer");
+			}
+			if (sleepTime >= 10 * 60 * 1000) {
+				return FormValidation.error("Sleep time must be less than 10 minutes");
+			}
+			if (sleepTime >= 60 * 1000) {
+				return FormValidation.error("Sleep time should be less than 1 minute");
+			}
+			return FormValidation.ok();
+		}
         /**
          * This human readable name is used in the configuration screen.
          *
